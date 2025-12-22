@@ -1,0 +1,522 @@
+[
+  {
+    "name": "Vienna",
+    "lat": "48.20849",
+    "lng": "16.37208",
+    "country": "AT",
+    "admin1": "09",
+    "admin2": "900"
+  },
+  {
+    "name": "Baku",
+    "lat": "40.37767",
+    "lng": "49.89201",
+    "country": "AZ",
+    "admin1": "09",
+    "admin2": ""
+  },
+  {
+    "name": "Brussels",
+    "lat": "50.85045",
+    "lng": "4.34878",
+    "country": "BE",
+    "admin1": "BRU",
+    "admin2": "BRU"
+  },
+  {
+    "name": "Sofia",
+    "lat": "42.69751",
+    "lng": "23.32415",
+    "country": "BG",
+    "admin1": "42",
+    "admin2": "SOF46"
+  },
+  {
+    "name": "Porto",
+    "lat": "-3.89333",
+    "lng": "-42.71",
+    "country": "BR",
+    "admin1": "20",
+    "admin2": "2208502"
+  },
+  {
+    "name": "Minsk",
+    "lat": "53.9",
+    "lng": "27.56667",
+    "country": "BY",
+    "admin1": "04",
+    "admin2": ""
+  },
+  {
+    "name": "Zürich",
+    "lat": "47.36667",
+    "lng": "8.55",
+    "country": "CH",
+    "admin1": "ZH",
+    "admin2": "112"
+  },
+  {
+    "name": "Madrid",
+    "lat": "4.73245",
+    "lng": "-74.26419",
+    "country": "CO",
+    "admin1": "33",
+    "admin2": "25430"
+  },
+  {
+    "name": "Prague",
+    "lat": "50.08804",
+    "lng": "14.42076",
+    "country": "CZ",
+    "admin1": "52",
+    "admin2": ""
+  },
+  {
+    "name": "Munich",
+    "lat": "48.13743",
+    "lng": "11.57549",
+    "country": "DE",
+    "admin1": "02",
+    "admin2": "091"
+  },
+  {
+    "name": "Hamburg",
+    "lat": "53.55073",
+    "lng": "9.99302",
+    "country": "DE",
+    "admin1": "04",
+    "admin2": "00"
+  },
+  {
+    "name": "Berlin",
+    "lat": "52.52437",
+    "lng": "13.41053",
+    "country": "DE",
+    "admin1": "16",
+    "admin2": "00"
+  },
+  {
+    "name": "Copenhagen",
+    "lat": "55.67594",
+    "lng": "12.56553",
+    "country": "DK",
+    "admin1": "17",
+    "admin2": "101"
+  },
+  {
+    "name": "Porto",
+    "lat": "42.16737",
+    "lng": "-6.89934",
+    "country": "ES",
+    "admin1": "55",
+    "admin2": "ZA"
+  },
+  {
+    "name": "Madrid",
+    "lat": "40.4165",
+    "lng": "-3.70256",
+    "country": "ES",
+    "admin1": "29",
+    "admin2": "M"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "41.38879",
+    "lng": "2.15899",
+    "country": "ES",
+    "admin1": "56",
+    "admin2": "B"
+  },
+  {
+    "name": "Samara",
+    "lat": "11.79342",
+    "lng": "41.00578",
+    "country": "ET",
+    "admin1": "45",
+    "admin2": ""
+  },
+  {
+    "name": "Helsinki",
+    "lat": "60.16952",
+    "lng": "24.93545",
+    "country": "FI",
+    "admin1": "01",
+    "admin2": "011"
+  },
+  {
+    "name": "Paris",
+    "lat": "48.85341",
+    "lng": "2.3488",
+    "country": "FR",
+    "admin1": "11",
+    "admin2": "75"
+  },
+  {
+    "name": "Lyon",
+    "lat": "45.74846",
+    "lng": "4.84671",
+    "country": "FR",
+    "admin1": "84",
+    "admin2": "69"
+  },
+  {
+    "name": "Marseille Prefecture",
+    "lat": "43.29092",
+    "lng": "5.37901",
+    "country": "FR",
+    "admin1": "93",
+    "admin2": "13"
+  },
+  {
+    "name": "Manchester",
+    "lat": "53.48095",
+    "lng": "-2.23743",
+    "country": "GB",
+    "admin1": "ENG",
+    "admin2": "I2"
+  },
+  {
+    "name": "London",
+    "lat": "51.50853",
+    "lng": "-0.12574",
+    "country": "GB",
+    "admin1": "ENG",
+    "admin2": "GLA"
+  },
+  {
+    "name": "Glasgow",
+    "lat": "55.86515",
+    "lng": "-4.25763",
+    "country": "GB",
+    "admin1": "SCT",
+    "admin2": "V2"
+  },
+  {
+    "name": "Birmingham",
+    "lat": "52.48142",
+    "lng": "-1.89983",
+    "country": "GB",
+    "admin1": "ENG",
+    "admin2": "A7"
+  },
+  {
+    "name": "Athens",
+    "lat": "37.98376",
+    "lng": "23.72784",
+    "country": "GR",
+    "admin1": "ESYE31",
+    "admin2": "99"
+  },
+  {
+    "name": "Budapest",
+    "lat": "47.49835",
+    "lng": "19.04045",
+    "country": "HU",
+    "admin1": "05",
+    "admin2": ""
+  },
+  {
+    "name": "Dublin",
+    "lat": "53.33306",
+    "lng": "-6.24889",
+    "country": "IE",
+    "admin1": "L",
+    "admin2": "33"
+  },
+  {
+    "name": "Turin",
+    "lat": "45.07049",
+    "lng": "7.68682",
+    "country": "IT",
+    "admin1": "12",
+    "admin2": "TO"
+  },
+  {
+    "name": "Milan",
+    "lat": "45.46427",
+    "lng": "9.18951",
+    "country": "IT",
+    "admin1": "09",
+    "admin2": "MI"
+  },
+  {
+    "name": "Porto",
+    "lat": "40.84395",
+    "lng": "14.25724",
+    "country": "IT",
+    "admin1": "04",
+    "admin2": "NA"
+  },
+  {
+    "name": "Shymkent",
+    "lat": "42.3",
+    "lng": "69.6",
+    "country": "KZ",
+    "admin1": "1537272",
+    "admin2": ""
+  },
+  {
+    "name": "Astana",
+    "lat": "51.1801",
+    "lng": "71.44598",
+    "country": "KZ",
+    "admin1": "05",
+    "admin2": ""
+  },
+  {
+    "name": "Almaty",
+    "lat": "43.25",
+    "lng": "76.91667",
+    "country": "KZ",
+    "admin1": "02",
+    "admin2": ""
+  },
+  {
+    "name": "Roma",
+    "lat": "-29.44667",
+    "lng": "27.70806",
+    "country": "LS",
+    "admin1": "14",
+    "admin2": ""
+  },
+  {
+    "name": "Madrid",
+    "lat": "19.08459",
+    "lng": "-103.87123",
+    "country": "MX",
+    "admin1": "08",
+    "admin2": "009"
+  },
+  {
+    "name": "Amsterdam",
+    "lat": "52.37403",
+    "lng": "4.88969",
+    "country": "NL",
+    "admin1": "07",
+    "admin2": "0363"
+  },
+  {
+    "name": "Napoles",
+    "lat": "10.504",
+    "lng": "122.8979",
+    "country": "PH",
+    "admin1": "06",
+    "admin2": "H3"
+  },
+  {
+    "name": "Madrid",
+    "lat": "9.26211",
+    "lng": "125.96437",
+    "country": "PH",
+    "admin1": "13",
+    "admin2": "62"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "13.7715",
+    "lng": "123.0485",
+    "country": "PH",
+    "admin1": "05",
+    "admin2": "16"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "12.8683",
+    "lng": "124.1419",
+    "country": "PH",
+    "admin1": "05",
+    "admin2": "58"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "8.5275",
+    "lng": "123.4587",
+    "country": "PH",
+    "admin1": "09",
+    "admin2": "65"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "8.15917",
+    "lng": "126.43417",
+    "country": "PH",
+    "admin1": "13",
+    "admin2": "62"
+  },
+  {
+    "name": "Warsaw",
+    "lat": "52.22977",
+    "lng": "21.01178",
+    "country": "PL",
+    "admin1": "78",
+    "admin2": "1465"
+  },
+  {
+    "name": "Lisbon",
+    "lat": "38.71667",
+    "lng": "-9.13333",
+    "country": "PT",
+    "admin1": "14",
+    "admin2": "1106"
+  },
+  {
+    "name": "Porto",
+    "lat": "41.14961",
+    "lng": "-8.61099",
+    "country": "PT",
+    "admin1": "17",
+    "admin2": "1312"
+  },
+  {
+    "name": "Roma",
+    "lat": "47.83333",
+    "lng": "26.6",
+    "country": "RO",
+    "admin1": "07",
+    "admin2": "38811"
+  },
+  {
+    "name": "Bucureşci",
+    "lat": "46.13333",
+    "lng": "22.9",
+    "country": "RO",
+    "admin1": "21",
+    "admin2": "88868"
+  },
+  {
+    "name": "Novi Beograd",
+    "lat": "44.80556",
+    "lng": "20.42417",
+    "country": "RS",
+    "admin1": "SE",
+    "admin2": "0"
+  },
+  {
+    "name": "Saint Petersburg",
+    "lat": "59.93863",
+    "lng": "30.31413",
+    "country": "RU",
+    "admin1": "66",
+    "admin2": ""
+  },
+  {
+    "name": "Samara",
+    "lat": "53.20007",
+    "lng": "50.15",
+    "country": "RU",
+    "admin1": "65",
+    "admin2": ""
+  },
+  {
+    "name": "Nizhniy Novgorod",
+    "lat": "56.32867",
+    "lng": "44.00205",
+    "country": "RU",
+    "admin1": "51",
+    "admin2": ""
+  },
+  {
+    "name": "Kazan",
+    "lat": "55.78874",
+    "lng": "49.12214",
+    "country": "RU",
+    "admin1": "73",
+    "admin2": "862913"
+  },
+  {
+    "name": "Yekaterinburg",
+    "lat": "56.8519",
+    "lng": "60.6122",
+    "country": "RU",
+    "admin1": "71",
+    "admin2": ""
+  },
+  {
+    "name": "Omsk",
+    "lat": "54.99244",
+    "lng": "73.36859",
+    "country": "RU",
+    "admin1": "54",
+    "admin2": ""
+  },
+  {
+    "name": "Novosibirsk",
+    "lat": "55.03442",
+    "lng": "82.94339",
+    "country": "RU",
+    "admin1": "53",
+    "admin2": "1496742"
+  },
+  {
+    "name": "Krasnoyarsk",
+    "lat": "56.02668",
+    "lng": "92.90765",
+    "country": "RU",
+    "admin1": "91",
+    "admin2": ""
+  },
+  {
+    "name": "Chelyabinsk",
+    "lat": "55.15402",
+    "lng": "61.42915",
+    "country": "RU",
+    "admin1": "13",
+    "admin2": "1535932"
+  },
+  {
+    "name": "Stockholm",
+    "lat": "59.32938",
+    "lng": "18.06871",
+    "country": "SE",
+    "admin1": "26",
+    "admin2": "0180"
+  },
+  {
+    "name": "Moskva",
+    "lat": "37.66101",
+    "lng": "69.62849",
+    "country": "TJ",
+    "admin1": "02",
+    "admin2": ""
+  },
+  {
+    "name": "Kazan",
+    "lat": "40.23167",
+    "lng": "32.68389",
+    "country": "TR",
+    "admin1": "68",
+    "admin2": ""
+  },
+  {
+    "name": "Kyiv",
+    "lat": "50.45466",
+    "lng": "30.5238",
+    "country": "UA",
+    "admin1": "12",
+    "admin2": ""
+  },
+  {
+    "name": "Kharkiv",
+    "lat": "49.98081",
+    "lng": "36.25272",
+    "country": "UA",
+    "admin1": "07",
+    "admin2": "6312"
+  },
+  {
+    "name": "Barcelona",
+    "lat": "10.13625",
+    "lng": "-64.68618",
+    "country": "VE",
+    "admin1": "02",
+    "admin2": "0318"
+  },
+  {
+    "name": "Hamburg",
+    "lat": "-33.29042",
+    "lng": "27.4747",
+    "country": "ZA",
+    "admin1": "05",
+    "admin2": "DC12"
+  }
+]
