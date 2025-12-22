@@ -40,7 +40,7 @@ def main():
         "Madrid",
         "Barcelona",
         "Saint Petersburg", 
-        "Roma", # (Rome)
+        "Rome", 
         "Berlin",
         "Milan", 
         "Athens", 
@@ -49,7 +49,7 @@ def main():
         "Manchester",
         "Birmingham", # (Birmingham)
         "Ufa",
-        "Melito di Napoli", 
+        "Lille",
         "Brussels",
         "Minsk",
         "Oslo",
@@ -90,7 +90,12 @@ def main():
     cities = response.json()
 
     # Obtener las ciudades del json que están en la lista de ciudades de EU
-    ciudades_json = [c for c in cities if c["name"] in ciudades_eu and not (c["name"] == "Porto" and c["country"] != "PT")]
+    ciudades_json = [
+        c for c in cities
+        if c["name"] in ciudades_eu
+        and not (c["name"] == "Porto" and c["country"] != "PT")
+        and not (c["name"] == "Lille" and c["country"] != "FR")
+    ]
 
     ciudades_filtradas = [c for c in ciudades_json if is_europe(c)]
 

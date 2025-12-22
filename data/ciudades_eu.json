@@ -128,6 +128,14 @@
     "admin2": "69"
   },
   {
+    "name": "Lille",
+    "lat": "50.63297",
+    "lng": "3.05858",
+    "country": "FR",
+    "admin1": "32",
+    "admin2": "59"
+  },
+  {
     "name": "Marseille Prefecture",
     "lat": "43.29092",
     "lng": "5.37901",
@@ -200,20 +208,20 @@
     "admin2": "TO"
   },
   {
+    "name": "Rome",
+    "lat": "41.89193",
+    "lng": "12.51133",
+    "country": "IT",
+    "admin1": "07",
+    "admin2": "RM"
+  },
+  {
     "name": "Milan",
     "lat": "45.46427",
     "lng": "9.18951",
     "country": "IT",
     "admin1": "09",
     "admin2": "MI"
-  },
-  {
-    "name": "Melito di Napoli",
-    "lat": "40.91948",
-    "lng": "14.23104",
-    "country": "IT",
-    "admin1": "04",
-    "admin2": "NA"
   },
   {
     "name": "Amsterdam",
@@ -254,14 +262,6 @@
     "country": "PT",
     "admin1": "17",
     "admin2": "1312"
-  },
-  {
-    "name": "Roma",
-    "lat": "47.83333",
-    "lng": "26.6",
-    "country": "RO",
-    "admin1": "07",
-    "admin2": "38811"
   },
   {
     "name": "Bucureşci",
