@@ -44,7 +44,6 @@ def main():
         "Berlin",
         "Milan", 
         "Athens", 
-        "Kyiv", # (Kiev)
         "Lisbon",
         "Manchester",
         "Birmingham", # (Birmingham)
@@ -61,27 +60,19 @@ def main():
         "Budapest",
         "Lyon",
         "Glasgow",
-        "Stockholm",
-        "Novosibirsk",
         "Marseille Prefecture",
         "Munich", # (Munich)
-        "Yekaterinburg",
         "Zürich", # (Zurich)
-        "Kharkiv",
         "Novi Beograd", # (Belgrade)
         "Copenhagen",
         "Helsinki",
         "Porto",
         "Prague",
-        "Kazan",
         "Sofia",
         "Köln",
         "Dublin",
         "Nizhniy Novgorod",
-        "Chelyabinsk",
-        "Omsk",
         "Amsterdam",
-        "Krasnoyarsk",
         "Samara",
         "Rostov-na-Donu"
     ])
