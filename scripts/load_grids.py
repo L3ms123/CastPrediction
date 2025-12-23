@@ -15,9 +15,8 @@ TTL_DAYS = 7
 TTL_SECONDS = TTL_DAYS * 24 * 3600
 
 DYNAMODB_TABLE = "WeatherReadings"
-CITY_JSON = "data/ciudades_eu.json"
+CITY_JSON = "data/ciudades_eu_km2.json"
 session = requests.Session()
-
 
 # ----------------------------------
 # UTILS
@@ -80,7 +79,7 @@ def fetch_hourly(lat, lon, retries=5):
     params = {
         "latitude": lat,
         "longitude": lon,
-        "hourly": ["temperature_2m", "relativehumidity_2m", "windspeed_10m"],
+        "hourly": ["temperature_2m", "relativehumidity_2m", "windspeed_10m", "precipitation", "precipitation_probability"],
         "timezone": "UTC"
     }
 
@@ -105,6 +104,8 @@ def store_grid_data(weather_table, city, lat, lon, geohash):
     temps = data["hourly"]["temperature_2m"]
     hums  = data["hourly"]["relativehumidity_2m"]
     winds = data["hourly"]["windspeed_10m"]
+    rains = data["hourly"]["precipitation"]
+    rain_prob = data["hourly"]["precipitation_probability"]
 
     idx = get_current_hour_index(times)
 
@@ -114,6 +115,10 @@ def store_grid_data(weather_table, city, lat, lon, geohash):
         .replace(tzinfo=timezone.utc)
         .timestamp()
     )
+
+    # ensure no null values
+    rain_value = rains[idx] if rains[idx] is not None else 0
+    rain_prob_value = rain_prob[idx] if rain_prob[idx] is not None else 0
 
     item = {
         "PK": f"grid#{geohash}",
@@ -125,6 +130,8 @@ def store_grid_data(weather_table, city, lat, lon, geohash):
         "temp": Decimal(str(temps[idx])),
         "humidity": Decimal(str(hums[idx])),
         "wind_speed": Decimal(str(winds[idx])),
+        "precipitation": Decimal(str(rain_value)),
+        "precipitation_prob": Decimal(str(rain_prob_value)),  
         "timestamp": ts_unix,
         "ttl": ts_unix + TTL_SECONDS
     }
@@ -161,6 +168,11 @@ def main():
             store_grid_data(weather_table, name, lat, lon, geohash)
 
     print("Loaded all cities successfully")
+
+def lambda_handler(event, context):
+    main()
+    return {"statusCode": 200,
+            "message": "Weather job executed successfully"}
 
 if __name__ == "__main__":
     main()
