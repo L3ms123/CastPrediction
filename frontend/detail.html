@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Detail - EuroWeather</title>
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- MISMO CSS QUE EL INDEX -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- JS para leer la ciudad -->
+  <script src="detail.js" defer></script>
+</head>
+<body class="body">
+  <div class="app">
+
+    <!-- Header reciclado -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="material-symbols-outlined">cloud_circle</span>
+        </div>
+        <h2 class="title">EuroWeather</h2>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <!-- Cabecera ubicación -->
+        <section class="location-header" style="border-bottom: none; padding-bottom: 0;">
+          <div>
+            <div class="location-label">
+              <span class="material-symbols-outlined">location_on</span>
+              <span>Current Location</span>
+            </div>
+            <h2 class="location-name">Berlin, DE</h2>
+            <p class="location-updated">Last updated: 10:45 AM CET</p>
+          </div>
+          <div class="location-actions">
+            <button class="btn-outline">
+              <span class="material-symbols-outlined">calendar_month</span>
+              Now
+            </button>
+            <button class="btn-outline">
+              <span class="material-symbols-outlined">calendar_month</span>
+              7-Day Forecast
+            </button>
+          </div>
+        </section>
+
+        <!-- GRID: izquierda (estado) + derecha (mapa) -->
+        <div class="grid">
+          <!-- COLUMNA IZQUIERDA -->
+          <section>
+            <div class="current-status">
+              <div class="current-left">
+                <div class="current-icon-wrapper">
+                  <span class="material-symbols-outlined current-icon">partly_cloudy_day</span>
+                </div>
+                <div>
+                  <div class="current-temp">12°</div>
+                  <div class="current-desc">Partly Cloudy</div>
+                  <div class="current-feels">Feels like 10°</div>
+                </div>
+              </div>
+
+              <div class="current-summary">
+                <div class="summary-item">
+                  <span class="summary-label">Precipitation</span>
+                  <span class="summary-value">2%</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Pressure</span>
+                  <span class="summary-value">1012 hPa</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Sunrise</span>
+                  <span class="summary-value">06:23</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Sunset</span>
+                  <span class="summary-value">19:45</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats detallados -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-box">
+                    <span class="material-symbols-outlined">air</span>
+                  </div>
+                  <span class="stat-badge">NW</span>
+                </div>
+                <div class="stat-body">
+                  <div class="stat-label">Wind Speed</div>
+                  <div class="stat-value">14 <span class="stat-unit">km/h</span></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-box blue">
+                    <span class="material-symbols-outlined">water_drop</span>
+                  </div>
+                  <span class="stat-badge red">-5%</span>
+                </div>
+                <div class="stat-body">
+                  <div class="stat-label">Humidity</div>
+                  <div class="stat-value">65 <span class="stat-unit">%</span></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-box orange">
+                    <span class="material-symbols-outlined">light_mode</span>
+                  </div>
+                  <span class="stat-badge green">Normal</span>
+                </div>
+                <div class="stat-body">
+                  <div class="stat-label">UV Index</div>
+                  <div class="stat-value">3 <span class="stat-unit">Moderate</span></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-box purple">
+                    <span class="material-symbols-outlined">visibility</span>
+                  </div>
+                  <span class="stat-badge">Good</span>
+                </div>
+                <div class="stat-body">
+                  <div class="stat-label">Visibility</div>
+                  <div class="stat-value">10 <span class="stat-unit">km</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- COLUMNA DERECHA -->
+          <aside class="right-column">
+            <div class="map-card">
+              <div class="map-header">
+                <h3>Radar Map</h3>
+              </div>
+              <div class="map-body">
+                <div id="mapContainer" class="map-background"></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+
+    <footer class="footer">
+      <p>© 2023 EuroWeather Inc. Data provided by European Meteo Services.</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EuroWeather - Weather Prediction</title>
+
+  <!-- Fuentes de Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Tu CSS externo -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- JS -->
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    defer
+  ></script>
+
+  <!-- Tu JS de app -->
+  <script type="module" src="city_selection.js" defer></script>
+  <script type="module" src="map_logic.js" defer></script>
+</head>
+<body class="body">
+  <div class="app">
+
+    <!-- Navegación -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="material-symbols-outlined">cloud_circle</span>
+        </div>
+        <h2 class="title">EuroWeather</h2>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main">
+      <div class="container">
+        <!-- Hero -->
+        <section class="hero-section">
+          <div class="hero-content">
+            <h1>Predicting Weather Across Europe</h1>
+            <p>Accurate forecasts for populated cities. Analyze historical trends and future predictions.</p>
+          </div>
+
+          <div class="hero-search">
+            <div class="search-mode">
+              <button id="btnCityMode" class="mode-btn active">City Name</button>
+              <button id="btnCoordMode" class="mode-btn">Coordinates</button>
+            </div>
+
+            <div class="search-bar">
+              <span class="material-symbols-outlined search-icon">search</span>
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Enter city (e.g. Berlin, Paris, Madrid)..."
+                autocomplete="off"
+              />
+              <span id="coordPreview" class="coord-preview"></span>
+
+              <button id="searchBtn" class="search-btn">Search</button>
+
+              <div id="suggestions" class="suggestions"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Columna: Mapa -->
+        <div class="column" id="mapSection">
+          <div class="map-card">
+            <div class="map-header">
+              <h3>Radar Map</h3>
+            </div>
+            <div class="map-body">
+              <div id="mapContainer" class="map-background"></div>
+
+              <div id="coordTooltip" class="coord-tooltip">
+                <div class="coord-title">Click to select</div>
+                <div id="coordText" class="coord-text"></div>
+              </div>
+
+              <div class="map-controls">
+                <button id="zoomInBtn" class="map-zoom">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                <button id="zoomOutBtn" class="map-zoom">
+                  <span class="material-symbols-outlined">remove</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Ciudades populares -->
+        <section class="popular">
+          <h3 class="popular-title">Popular European Cities</h3>
+          <div class="popular-grid">
+            <article class="city-card">
+              <div class="city-header">
+                <h4>London</h4>
+                <span class="material-symbols-outlined">arrow_outward</span>
+              </div>
+              <div class="city-body">
+                <span class="material-symbols-outlined city-icon rainy">rainy</span>
+                <div>
+                  <div class="city-temp">9°</div>
+                  <div class="city-desc">Rainy</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="city-card">
+              <div class="city-header">
+                <h4>Paris</h4>
+                <span class="material-symbols-outlined">arrow_outward</span>
+              </div>
+              <div class="city-body">
+                <span class="material-symbols-outlined city-icon sunny">sunny</span>
+                <div>
+                  <div class="city-temp">14°</div>
+                  <div class="city-desc">Clear</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="city-card">
+              <div class="city-header">
+                <h4>Rome</h4>
+                <span class="material-symbols-outlined">arrow_outward</span>
+              </div>
+              <div class="city-body">
+                <span class="material-symbols-outlined city-icon hot">wb_sunny</span>
+                <div>
+                  <div class="city-temp">19°</div>
+                  <div class="city-desc">Sunny</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="city-card">
+              <div class="city-header">
+                <h4>Madrid</h4>
+                <span class="material-symbols-outlined">arrow_outward</span>
+              </div>
+              <div class="city-body">
+                <span class="material-symbols-outlined city-icon partly">partly_cloudy_day</span>
+                <div>
+                  <div class="city-temp">17°</div>
+                  <div class="city-desc">Partly Cloudy</div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>© 2023 EuroWeather Inc. Data provided by European Meteo Services.</p>
+    </footer>
+  </div>
+</body>
+</html>
