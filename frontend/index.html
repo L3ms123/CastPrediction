@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EuroWeather - Weather Prediction</title>
 
+  <link rel="icon" type="image" href="..\img\weather.png" />
+
   <!-- Fuentes de Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,7 +30,6 @@
 
   <!-- Tu JS de app -->
   <script type="module" src="city_selection.js" defer></script>
-  <script type="module" src="map_logic.js" defer></script>
 </head>
 <body class="body">
   <div class="app">
@@ -50,7 +51,7 @@
         <section class="hero-section">
           <div class="hero-content">
             <h1>Predicting Weather Across Europe</h1>
-            <p>Accurate forecasts for populated cities. Analyze historical trends and future predictions.</p>
+            <p>Find and explore temperatures, rain, and wind for the next days in your city.</p>
           </div>
 
           <div class="hero-search">
@@ -64,7 +65,7 @@
               <input
                 id="searchInput"
                 type="text"
-                placeholder="Enter city (e.g. Berlin, Paris, Madrid)..."
+                placeholder="Enter a city (e.g. Berlin, Paris, Madrid)..."
                 autocomplete="off"
               />
               <span id="coordPreview" class="coord-preview"></span>
@@ -166,9 +167,10 @@
         </section>
       </div>
     </main>
+    
 
     <footer class="footer">
-      <p>© 2023 EuroWeather Inc. Data provided by European Meteo Services.</p>
+      <p>© 2023 EuroWeather Inc. Data provided by OpenMeteo Services.</p>
     </footer>
   </div>
 </body>

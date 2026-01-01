@@ -1,6 +1,6 @@
 window.searchMode = "city"; // global simple
-
 let citiesData = [];
+let selectedLatLng = null; 
 
 // cargar JSON una vez al arrancar
 fetch('../data/ciudades_eu_km2.json')
@@ -10,6 +10,7 @@ fetch('../data/ciudades_eu_km2.json')
     fillCityDatalist();
   })
   .catch(err => console.error('Error cargando cities.json', err));
+
 
 // función que devuelve lat/lng de una ciudad
 function getCityCenter(cityName) {
@@ -29,7 +30,7 @@ function fillCityDatalist() {
 
   citiesData.forEach((c) => {
     const option = document.createElement('option');
-    option.value = c.name;    // o c.city según tu JSON
+    option.value = c.name;    
     dataList.appendChild(option);
   });
 }
@@ -44,6 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const coordTooltip = document.getElementById("coordTooltip");
   const mapSection = document.getElementById("mapSection");
   const suggestionsEl = document.getElementById("suggestions");
+  const coordText = document.getElementById("coordText"); 
+
+
+// humidity,  wind speed, time,  temp,prec, rain,???
 
   function setMode(newMode) {
     window.searchMode = newMode;
@@ -66,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnCityMode.addEventListener("click", () => setMode("city"));
   btnCoordMode.addEventListener("click", () => setMode("coords"));
 
-  // pintar el menú de sugerencias debajo del input
+  // menú de sugerencias debajo del input
   function renderSuggestions(query) {
     suggestionsEl.innerHTML = "";
 
@@ -119,8 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!center) {
       coordPreview.textContent = "";
     } else {
-      const [lat, lng] = center;
-      coordPreview.textContent = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+    const [lat, lng] = center;
+    coordPreview.textContent = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+
+      if (window.searchMode === "coords") {
+        selectedLatLng = { lat, lng };  // coords come from city name
+        searchBtn.textContent = "Search";
+      }
     }
 
     renderSuggestions(cityName);
@@ -138,30 +148,98 @@ document.addEventListener("DOMContentLoaded", () => {
   searchBtn.addEventListener("click", () => {
     const city = searchInput.value.trim();
     if (!city) {
-      alert("Enter a city");
+      alert("Please enter a city name", "warning");
       return;
     }
 
+    if (!getCityCenter(city)) {
+      console.log('City not found:', city);
+      alert(`City "${city}" not found in database`, "error");
+      return;
+    }
+
+    // MODO 1: CITY NAME → IR A DETAIL.HTML
     if (window.searchMode === "city") {
-      // 1) Modo City Name → ir a detail
+      console.log('Ciudad válida, navegando a detail.html');
       const url = `detail.html?city=${encodeURIComponent(city)}`;
       window.location.href = url;
-    } else {
-      // 2) Modo Coordinates → centrar mapa en la ciudad y hacer scroll
-      const center = getCityCenter(city);
+    } 
 
-      if (!center) {
-        alert("City not found in database");
-        return;
-      }
+    // MODO 2: COORDINATES → CENTRAR MAPA
+    else {
+      console.log('Ciudad válida, centrando mapa');
+      selectedLatLng = getCityCenter(city);
 
       if (window.map) {
-        window.map.setView(center, 12);
+        window.map.setView(selectedLatLng, 12);
+        
+        if (mapSection) {
+          mapSection.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
 
-      if (mapSection) {
-        mapSection.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      const lat = selectedLatLng.lat;
+      const lng = selectedLatLng.lng;
+
+      // aquí ya SIEMPRE tienes coords definitivas
+      const url = `detail.html?lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}`;
+      window.location.href = url;
+    };
+  });
+
+  // INICIALIZAR MAPA LEAFLET
+  const mapDiv = document.getElementById("mapContainer");
+  if (!mapDiv) return;
+
+  const defaultCenter = [52.52, 13.405];
+  let selectionMarker = null;
+
+  // 1) Guardar el mapa en window.map (GLOBAL)
+  window.map = L.map("mapContainer", {
+    center: defaultCenter,
+    zoom: 11,
+    zoomControl: false
+  });
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap"
+  }).addTo(window.map);
+
+  // Click en el mapa: elegir coordenadas
+  window.map.on("click", (e) => {
+    const { lat, lng } = e.latlng;
+    selectedLatLng = e.latlng;
+    
+    searchBtn.textContent = "Search";   // ahora el botón sirve para ir a detail.html
+    searchInput.value = `${lat}, ${lng}`;
+
+    if (selectionMarker) {
+      selectionMarker.setLatLng(e.latlng);
+    } else {
+      selectionMarker = L.marker(e.latlng).addTo(window.map);
+    }
+
+    if (coordTooltip) {
+      coordTooltip.style.opacity = "1";
+    }
+
+    if (coordText) {
+      coordText.textContent =
+        `Lat: ${lat.toFixed(5)}, Lon: ${lng.toFixed(5)}`;
     }
   });
+
+  const zoomInBtn = document.getElementById("zoomInBtn");
+  const zoomOutBtn = document.getElementById("zoomOutBtn");
+
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener("click", () => window.map.zoomIn());
+  }
+
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener("click", () => window.map.zoomOut());
+  }
 });
+
+
+
