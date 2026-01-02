@@ -9,9 +9,8 @@ function getQueryParams() {
 }
 
 // 2) Llamar a tu API Gateway 
-const API_BASE = "https://TU_ID.execute-api.us-east-1.amazonaws.com"; // <-- CAMBIAR
-// Si tu ruta es /current:
-const CURRENT_ENDPOINT = `${API_BASE}/current`;
+const API_BASE = "https://8fcuk1jmo6.execute-api.us-east-1.amazonaws.com";
+const CURRENT_ENDPOINT = `${API_BASE}/current-weather`;
 
 async function fetchCurrentWeather(city) {
   const res = await fetch(

@@ -2,7 +2,7 @@ window.searchMode = "city"; // global simple
 let citiesData = [];
 let selectedLatLng = null; 
 
-// cargar JSON una vez al arrancar
+// cargar JSON al arrancar
 fetch('../data/ciudades_eu_km2.json')
   .then(res => res.json())
   .then(data => {
