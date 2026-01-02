@@ -208,10 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Click en el mapa: elegir coordenadas
   window.map.on("click", (e) => {
     const { lat, lng } = e.latlng;
-    selectedLatLng = e.latlng;
-    
-    searchBtn.textContent = "Search";   // ahora el botón sirve para ir a detail.html
-    searchInput.value = `${lat}, ${lng}`;
+
+    // Solo si estamos en modo coordenadas
+    if (window.searchMode === "coords") {
+      selectedLatLng = { lat, lng };
+      searchBtn.textContent = "Search";
+      searchInput.value = `${lat}, ${lng}`;
+    }
 
     if (selectionMarker) {
       selectionMarker.setLatLng(e.latlng);
