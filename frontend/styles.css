@@ -651,12 +651,13 @@ body.body {
   background-color: #1c252e;
   border-radius: 12px;
   border: 1px solid #2d3748;
-  padding: 16px;
+  padding: 12px;
   cursor: pointer;
 }
 
 .city-header {
   display: flex;
+  height: 15;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
@@ -670,23 +671,6 @@ body.body {
 
 .city-icon {
   font-size: 32px;
-}
-
-.city-icon.rainy {
-  color: #60a5fa;
-}
-
-.city-icon.sunny,
-.city-icon.partly {
-  color: #fbbf24;
-}
-
-.city-icon.hot {
-  color: #fb923c;
-}
-
-.city-icon.cold {
-  color: #bfdbfe;
 }
 
 .city-temp {

@@ -1,9 +1,11 @@
+const API_BASE = "https://8fcuk1jmo6.execute-api.us-east-1.amazonaws.com";
+
 window.searchMode = "city"; // global simple
 let citiesData = [];
 let selectedLatLng = null; 
 
 // cargar JSON al arrancar
-fetch('../data/ciudades_eu_km2.json')
+fetch('../data/ciudades_eu_km2_with_grids.json')
   .then(res => res.json())
   .then(data => {
     citiesData = data;
@@ -16,10 +18,10 @@ fetch('../data/ciudades_eu_km2.json')
 function getCityCenter(cityName) {
   const city = citiesData.find(
     (c) => c.name.toLowerCase() === cityName.toLowerCase()
-  ); // [web:12][web:6]
+  );
 
   if (!city) return null;
-  return [city.lat, city.lng];
+  return [Number(city.lat), Number(city.lng)];
 }
 
 function fillCityDatalist() {
@@ -35,6 +37,78 @@ function fillCityDatalist() {
   });
 }
 
+async function loadPopularCity(card, cityName) {
+  const tempEl = card.querySelector(".city-temp");
+  const iconEl = card.querySelector(".city-icon");
+
+  tempEl.textContent = "--°"; // estado inicial
+
+  try {
+    const url = `${API_BASE}/current-weather?city=${encodeURIComponent(
+      cityName
+    )}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      tempEl.textContent = "--°";
+      iconEl.textContent = "help"; // icono de error / desconocido
+      return;
+    }
+
+    const data = await res.json();
+
+    const temp = data.temp != null ? Math.round(data.temp) : null;
+    tempEl.textContent = temp != null ? `${temp}°` : "--°";
+
+    // Decidir icono según datos de lluvia/nubes/lo que tengas
+    const iconName = chooseIconFromData(data);
+    iconEl.textContent = iconName;
+  } catch (err) {
+    console.error("Error loading popular city", cityName, err);
+    tempEl.textContent = "--°";
+    iconEl.textContent = "help";
+  }
+}
+
+function initPopularCities() {
+  const cards = document.querySelectorAll(".city-card[data-city]");
+  cards.forEach((card) => {
+    const cityName = card.getAttribute("data-city");
+    if (!cityName) return;
+
+    // Al cargar la página pedimos la última medición
+    loadPopularCity(card, cityName);
+  });
+}
+
+function chooseIconFromData(data) {
+  const temp = data.temp;
+  const rainProb = data.precipitation_prob;
+  const rain = data.precipitation;
+
+  // Mucha lluvia o prob de lluvia → rainy
+  if ((rainProb != null && rainProb > 60) || (rain != null && rain > 1)) {
+    return "rainy"; // icono Material Symbols
+  }
+
+  // Algo de lluvia/nubes
+  if ((rainProb != null && rainProb > 20) || (rain != null && rain > 0)) {
+    return "partly_cloudy_day";
+  }
+
+  // Muy despejado y cálido
+  if (temp != null && temp >= 20) {
+    return "wb_sunny";
+  }
+
+  // Frío pero sin lluvia
+  if (temp != null && temp < 5) {
+    return "ac_unit"; // nieve / frío
+  }
+
+  // Default: nublado
+  return "wb_cloudy";
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const coordPreview = document.getElementById("coordPreview");
@@ -46,9 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const mapSection = document.getElementById("mapSection");
   const suggestionsEl = document.getElementById("suggestions");
   const coordText = document.getElementById("coordText"); 
-
-
-// humidity,  wind speed, time,  temp,prec, rain,???
 
   function setMode(newMode) {
     window.searchMode = newMode;
@@ -63,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnCityMode.classList.remove("active");
       btnCoordMode.classList.add("active");
 
-      searchBtn.textContent = "Go to map"; // solo texto distinto para claridad
+      searchBtn.textContent = "Go to map"; 
       coordTooltip.style.display = "block";
     }
   }
@@ -146,7 +217,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // CLICK EN SEARCH: comportamiento distinto según el modo
   searchBtn.addEventListener("click", () => {
-    const city = searchInput.value.trim();
+    const raw = searchInput.value.trim();
+    if (!raw) {
+      alert("Please enter a city name", "warning");
+      return;
+    }
+
+    // ¿Coord mode + input parece coords?
+    const isCoordMode = window.searchMode === "coords";
+    const coordMatch = raw.match(/^\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*$/);
+
+    if (isCoordMode && coordMatch) {
+      // Caso 2: ya tenemos coords → ir a detail con lat/lng
+      const lat = Number(coordMatch[1]);
+      const lng = Number(coordMatch[3]);
+      const url = `detail.html?lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}`;
+      window.location.href = url;
+      return;
+    }
+
+    const city = raw;
     if (!city) {
       alert("Please enter a city name", "warning");
       return;
@@ -168,23 +258,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // MODO 2: COORDINATES → CENTRAR MAPA
     else {
       console.log('Ciudad válida, centrando mapa');
-      selectedLatLng = getCityCenter(city);
+      const center = getCityCenter(city);
+      if (!center) return;
+      const [lat, lng] = center;
+
+      selectedLatLng = { lat, lng };
 
       if (window.map) {
-        window.map.setView(selectedLatLng, 12);
-        
+        window.map.setView([lat, lng], 12);
+
         if (mapSection) {
           mapSection.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }
-
-      const lat = selectedLatLng.lat;
-      const lng = selectedLatLng.lng;
-
-      // aquí ya SIEMPRE tienes coords definitivas
-      const url = `detail.html?lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}`;
-      window.location.href = url;
-    };
+    }
   });
 
   // INICIALIZAR MAPA LEAFLET
@@ -242,6 +329,20 @@ document.addEventListener("DOMContentLoaded", () => {
   if (zoomOutBtn) {
     zoomOutBtn.addEventListener("click", () => window.map.zoomOut());
   }
+
+  const popularCards = document.querySelectorAll(".city-card[data-city]");
+  popularCards.forEach((card) => {
+    card.style.cursor = "pointer";
+    card.addEventListener("click", () => {
+      const cityName = card.getAttribute("data-city");
+      if (!cityName) return;
+
+      const url = `detail.html?city=${encodeURIComponent(cityName)}`;
+      window.location.href = url;
+    });
+  });
+  initPopularCities();
+
 });
 
 
