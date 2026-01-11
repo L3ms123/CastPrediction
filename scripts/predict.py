@@ -16,12 +16,14 @@ PK_PREFIX = "grid#"
 SK_PREFIX = "ts#"
 
 BASE_DIR = os.path.dirname(__file__)
-MODEL_PATH = os.path.join(BASE_DIR, "gb_bundle.joblib")
-CITY_JSON_PATH = os.path.join(BASE_DIR, "ciudades_eu_km2_with_grids.json")
+MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(BASE_DIR, "models_gb", "gb_bundle.joblib"))
+
+# JSON used to resolve city -> representative grid (lat/lon/geohash)
+CITY_JSON_PATH = os.getenv("CITY_JSON_PATH", os.path.join(BASE_DIR, "ciudades_eu_km2_with_grids.json"))
 
 TARGETS = ["temp", "humidity", "wind_speed", "precipitation", "precipitation_prob"]
 
-MAX_FUTURE_DAYS = 4  
+MAX_FUTURE_DAYS = int(os.getenv("MAX_FUTURE_DAYS", "4"))  # limit user to 4 days after last data
 
 
 # ---------------- Helpers ----------------
@@ -34,6 +36,8 @@ def resp(code, body):
         "headers": {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET,OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
         },
         "body": json.dumps(body),
     }
@@ -47,6 +51,7 @@ def parse_time(iso):
     dt = datetime.fromisoformat(s)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
+    # round to hour
     return dt.astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
 
 def norm(s):
@@ -56,16 +61,10 @@ def load_city_data():
     with open(CITY_JSON_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
-def resolve_city_to_grid(cities, city, country=None):
+def resolve_city_to_grid(cities, city):
     city_n = norm(city)
-    country_n = norm(country) if country else None
 
-    matches = []
-    for c in cities:
-        if norm(c.get("name")) == city_n:
-            if country_n is None or norm(c.get("country")) == country_n:
-                matches.append(c)
-
+    matches = [c for c in cities if norm(c.get("name")) == city_n]
     if not matches:
         raise ValueError("City not found in JSON (check spelling)")
 
@@ -75,7 +74,7 @@ def resolve_city_to_grid(cities, city, country=None):
         raise ValueError("City has no grids in JSON")
 
     g0 = grids[0]  # representative grid
-    return float(g0["lat"]), float(g0["lon"]), str(g0["geohash"]), c.get("country")
+    return float(g0["lat"]), float(g0["lon"]), str(g0["geohash"])
 
 
 # ---------------- DynamoDB ----------------
@@ -110,9 +109,6 @@ def query_range(table, geohash, start_dt, end_dt):
     return items
 
 def get_latest_timestamp(table, geohash):
-    """
-    Efficient: query last item by SK descending and Limit=1
-    """
     pk = f"{PK_PREFIX}{geohash}"
     r = table.query(
         KeyConditionExpression=Key(PK_NAME).eq(pk),
@@ -128,7 +124,7 @@ def get_latest_timestamp(table, geohash):
 
 
 # ---------------- Features ----------------
-def build_features(items, hour):
+def build_features(items, target_hour):
     rows = []
     for it in items:
         ts = it.get("timestamp")
@@ -136,6 +132,7 @@ def build_features(items, hour):
             continue
         ts_i = int(dec(ts))
         dt = datetime.fromtimestamp(ts_i, tz=timezone.utc)
+
         rows.append({
             "timestamp": ts_i,
             "hour": dt.hour,
@@ -150,9 +147,9 @@ def build_features(items, hour):
         raise ValueError("Not enough history to build features")
 
     rows.sort(key=lambda r: r["timestamp"])
-    feats = {"hour_of_day": int(hour)}
+    feats = {"hour_of_day": int(target_hour)}
 
-    # overall stats
+    # overall stats (computed from the whole 6-day window)
     for var in TARGETS:
         vals = [r[var] for r in rows if r[var] is not None]
         if not vals:
@@ -164,14 +161,13 @@ def build_features(items, hour):
             var0 = sum((x - mu) ** 2 for x in vals) / len(vals)
             feats[f"{var}_overall_mean"] = float(mu)
             feats[f"{var}_overall_std"] = float(math.sqrt(var0))
-            feats[f"{var}_last"] = float(rows[-1][var]) if rows[-1][var] is not None else float(mu)
+            last_val = rows[-1][var]
+            feats[f"{var}_last"] = float(last_val) if last_val is not None else float(mu)
 
-    # hour-of-day stats
-    hod_rows = [r for r in rows if r["hour"] == hour and r[var] is not None]
+    # hour-of-day stats for the requested hour (fallback to overall if too sparse)
     for var in TARGETS:
-        vv = [r[var] for r in rows if r["hour"] == hour and r[var] is not None]
+        vv = [r[var] for r in rows if r["hour"] == target_hour and r[var] is not None]
         if len(vv) < 3:
-            # fallback: use overall stats
             mu = feats[f"{var}_overall_mean"]
             feats[f"{var}_hod_mean"] = mu
             feats[f"{var}_hod_min"] = mu
@@ -192,10 +188,13 @@ def build_features(items, hour):
 
 # ---------------- Lambda handler ----------------
 def lambda_handler(event, context):
+    # CORS preflight
+    if event.get("httpMethod") == "OPTIONS":
+        return resp(200, {"ok": True})
+
     try:
         qs = event.get("queryStringParameters") or {}
         city = qs.get("city")
-        country = qs.get("country")  # optional
         time_iso = qs.get("time")
 
         if not city or not time_iso:
@@ -205,12 +204,12 @@ def lambda_handler(event, context):
         hour = target_dt.hour
 
         cities = load_city_data()
-        lat, lon, geohash, resolved_country = resolve_city_to_grid(cities, city, country)
+        lat, lon, geohash = resolve_city_to_grid(cities, city)
 
         dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
         table = dynamodb.Table(DYNAMODB_TABLE)
 
-        # 1) find latest available timestamp for this grid
+        # 1) latest available timestamp for this grid
         last_ts = get_latest_timestamp(table, geohash)
         last_dt = datetime.fromtimestamp(last_ts, tz=timezone.utc).replace(minute=0, second=0, microsecond=0)
         max_dt = last_dt + timedelta(days=MAX_FUTURE_DAYS)
@@ -224,12 +223,13 @@ def lambda_handler(event, context):
                 "requested_utc": target_dt.strftime("%Y-%m-%dT%H:00:00Z"),
             })
 
-        # 3) build history window from last_dt (use last 6 days ending at last_dt)
+        # 3) build history window ending at last_dt (last 6 days)
         start_dt = last_dt - timedelta(days=6)
         items = query_range(table, geohash, start_dt, last_dt)
 
         feats = build_features(items, hour)
 
+        # 4) load trained models bundle and predict
         bundle = joblib.load(MODEL_PATH)
         feature_cols = bundle["feature_columns"]
         X = [float(feats.get(c, 0.0)) for c in feature_cols]
@@ -238,7 +238,6 @@ def lambda_handler(event, context):
 
         return resp(200, {
             "city": city,
-            "country": country or resolved_country,
             "time": target_dt.strftime("%Y-%m-%dT%H:00:00Z"),
             "last_available_utc": last_dt.strftime("%Y-%m-%dT%H:00:00Z"),
             "max_allowed_utc": max_dt.strftime("%Y-%m-%dT%H:00:00Z"),

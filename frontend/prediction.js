@@ -1,65 +1,85 @@
 // prediction.js
+// Calls predict.py (/predict) using city + time
+// Returns data normalized for updateDetailPage(w)
 
-function getQueryParams() {
-  const p = new URLSearchParams(window.location.search);
-  return {
-    city: p.get("city"),
-    lat: p.get("lat") ? Number(p.get("lat")) : null,
-    lng: p.get("lng") ? Number(p.get("lng")) : null,
-    time: p.get("time"), // ISO string
-  };
-}
+(function () {
+  const API_BASE = "https://5l3e4zv2p1.execute-api.us-east-1.amazonaws.com";
+  const PREDICT_ENDPOINT = `${API_BASE}/predict`;
 
-const API_BASE = "https://5l3e4zv2p1.execute-api.us-east-1.amazonaws.com";
-const PREDICT_ENDPOINT = `${API_BASE}/predict`;
-
-async function fetchPrediction({ city, lat, lng, time }) {
-  if (!time) throw new Error("Missing time");
-
-  let url;
-  if (city) {
-    url = `${PREDICT_ENDPOINT}?city=${encodeURIComponent(city)}&time=${encodeURIComponent(time)}`;
-  } else if (lat != null && lng != null) {
-    url = `${PREDICT_ENDPOINT}?lat=${lat}&lng=${lng}&time=${encodeURIComponent(time)}`;
-  } else {
-    throw new Error("Missing city or coordinates");
+  function isoToUnixSeconds(iso) {
+    if (!iso) return null;
+    const ms = Date.parse(iso);
+    if (Number.isNaN(ms)) return null;
+    return Math.floor(ms / 1000);
   }
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return await res.json();
-}
+  function buildPredictUrl({ city, time }) {
+    if (!city) throw new Error("Missing city");
+    if (!time) throw new Error("Missing time (ISO)");
 
-function renderPrediction(data, params) {
-  document.getElementById("predLocation").textContent =
-    data.city_name || params.city || "Unknown location";
-
-  document.getElementById("predTime").textContent =
-    `Target time (UTC): ${params.time}`;
-
-  const set = (id, value, suffix = "") => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = value == null ? "-" : `${value}${suffix}`;
-  };
-
-  set("pTemp", data.temp != null ? Math.round(data.temp) : null, "°");
-  set("pHum", data.humidity != null ? data.humidity.toFixed(1) : null, "%");
-  set("pWind", data.wind_speed != null ? data.wind_speed.toFixed(1) : null, " km/h");
-  set("pRain", data.precipitation != null ? data.precipitation.toFixed(1) : null, " mm");
-  set("pRainProb", data.precipitation_prob != null ? data.precipitation_prob.toFixed(1) : null, "%");
-
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const params = getQueryParams();
-
-  try {
-    const data = await fetchPrediction(params);
-    renderPrediction(data, params);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("predLocation").textContent = "Error loading prediction";
-    document.getElementById("predTime").textContent = String(err.message || err);
+    const url = new URL(PREDICT_ENDPOINT);
+    url.searchParams.set("city", city);
+    url.searchParams.set("time", time);
+    return url.toString();
   }
-});
+
+  function normalizePredictResponse(apiData) {
+    // predict.py returns:
+    // {
+    //   city, time, lat, lon, geohash,
+    //   predicted: { temp, humidity, wind_speed, precipitation, precipitation_prob }
+    // }
+
+    const predicted = apiData.predicted || {};
+
+    return {
+      city_name: apiData.city || "Unknown city",
+      lat: apiData.lat,
+      lon: apiData.lon,
+      geohash: apiData.geohash,
+
+      // detail.js expects unix seconds
+      timestamp: isoToUnixSeconds(apiData.time),
+
+      // weather values used by updateDetailPage()
+      temp: predicted.temp,
+      humidity: predicted.humidity,
+      wind_speed: predicted.wind_speed,
+      precipitation: predicted.precipitation,
+      precipitation_prob: predicted.precipitation_prob,
+
+      // optional (debug / future use)
+      time_iso: apiData.time,
+      last_available_utc: apiData.last_available_utc,
+      max_allowed_utc: apiData.max_allowed_utc,
+    };
+  }
+
+  async function fetchPrediction({ city, time }) {
+    const url = buildPredictUrl({ city, time });
+
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Predict API returned non-JSON (status ${res.status})`);
+    }
+
+    if (!res.ok) {
+      const msg = data?.error || `Predict API error: ${res.status}`;
+      throw new Error(msg);
+    }
+
+    return normalizePredictResponse(data);
+  }
+
+  // Global API for detail.js
+  window.EuroWeatherPrediction = {
+    fetchPrediction,
+  };
+})();

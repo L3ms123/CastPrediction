@@ -188,27 +188,51 @@ function initForecastPanel() {
     inputTime.value = `${now.getHours().toString().padStart(2, "0")}:00`;
   });
 
-  btnCancel.addEventListener("click", () => {
-    panel.style.display = "none";
-  });
+  if (btnCancel) {
+    btnCancel.addEventListener("click", () => {
+      panel.style.display = "none";
+    });
+  }
 
-  btnApply.addEventListener("click", () => {
+  btnApply.addEventListener("click", async () => {
     if (!inputDate.value || !inputTime.value) {
-      if (window.showToast) {
-        showToast("Please select both date and time", "warning");
-      } else {
-        alert("Please select both date and time");
-      }
+      if (window.showToast) showToast("Please select both date and time", "warning");
+      else alert("Please select both date and time");
       return;
     }
 
     const selectedISO = `${inputDate.value}T${inputTime.value}:00Z`;
     console.log("Selected forecast datetime:", selectedISO);
 
-    // Aquí luego llamarás a tu API de predicción, por ejemplo:
-    // fetch(`${API_BASE}/forecast?city=${city}&time=${encodeURIComponent(selectedISO)}`)
+    try {
+      const { city } = getQueryParams();
 
-    panel.style.display = "none";
+      if (!city) throw new Error("Missing city in URL");
+      if (!window.EuroWeatherPrediction?.fetchPrediction) {
+        throw new Error("prediction.js not loaded");
+      }
+
+      const pred = await window.EuroWeatherPrediction.fetchPrediction({
+        city,
+        time: selectedISO,
+      });
+
+      updateDetailPage(pred);
+
+      const locationUpdatedEl = document.querySelector(".location-updated");
+      if (locationUpdatedEl) {
+        locationUpdatedEl.textContent = `Forecast for: ${selectedISO}`;
+      }
+
+      if (window.showToast) showToast("Forecast loaded", "success");
+    } catch (err) {
+      console.error(err);
+      const msg = err?.message || "Prediction failed";
+      if (window.showToast) showToast(msg, "error");
+      else alert(msg);
+    } finally {
+      panel.style.display = "none";
+    }
   });
 
   // cerrar al hacer clic fuera
