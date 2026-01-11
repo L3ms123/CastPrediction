@@ -1,10 +1,8 @@
-// prediction.js
-// Calls predict.py (/predict) using city + time
-// Returns data normalized for updateDetailPage(w)
-
+// prediction.js (FRONTEND) - LOCAL predictor
 (function () {
-  const API_BASE = "https://5l3e4zv2p1.execute-api.us-east-1.amazonaws.com";
-  const PREDICT_ENDPOINT = `${API_BASE}/predict`;
+  // IMPORTANT: local FastAPI (uvicorn)
+  const LOCAL_BASE = "http://127.0.0.1:5000";
+  const PREDICT_ENDPOINT = `${LOCAL_BASE}/predict`;
 
   function isoToUnixSeconds(iso) {
     if (!iso) return null;
@@ -23,32 +21,32 @@
     return url.toString();
   }
 
+  function extractErrorMessage(data, status) {
+    const d = data?.detail;
+    if (typeof d === "string" && d.trim()) return d;
+    if (d && typeof d === "object") {
+      if (d.error) return d.error;
+      try { return JSON.stringify(d); } catch { return `Predict error (status ${status})`; }
+    }
+    if (data?.error) return data.error;
+    return `Predict error (status ${status})`;
+  }
+
   function normalizePredictResponse(apiData) {
-    // predict.py returns:
-    // {
-    //   city, time, lat, lon, geohash,
-    //   predicted: { temp, humidity, wind_speed, precipitation, precipitation_prob }
-    // }
-
     const predicted = apiData.predicted || {};
-
     return {
       city_name: apiData.city || "Unknown city",
       lat: apiData.lat,
       lon: apiData.lon,
       geohash: apiData.geohash,
-
-      // detail.js expects unix seconds
       timestamp: isoToUnixSeconds(apiData.time),
 
-      // weather values used by updateDetailPage()
       temp: predicted.temp,
       humidity: predicted.humidity,
       wind_speed: predicted.wind_speed,
       precipitation: predicted.precipitation,
       precipitation_prob: predicted.precipitation_prob,
 
-      // optional (debug / future use)
       time_iso: apiData.time,
       last_available_utc: apiData.last_available_utc,
       max_allowed_utc: apiData.max_allowed_utc,
@@ -58,28 +56,27 @@
   async function fetchPrediction({ city, time }) {
     const url = buildPredictUrl({ city, time });
 
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-    });
+    let res;
+    try {
+      res = await fetch(url, { method: "GET" });
+    } catch {
+      throw new Error("No puc connectar amb el predictor local. Comprova que uvicorn està actiu a http://127.0.0.1:5000 i que /health funciona.");
+    }
 
     let data;
     try {
       data = await res.json();
     } catch {
-      throw new Error(`Predict API returned non-JSON (status ${res.status})`);
+      const txt = await res.text().catch(() => "");
+      throw new Error(`Predictor local ha retornat no-JSON (status ${res.status}) ${txt}`);
     }
 
     if (!res.ok) {
-      const msg = data?.error || `Predict API error: ${res.status}`;
-      throw new Error(msg);
+      throw new Error(extractErrorMessage(data, res.status));
     }
 
     return normalizePredictResponse(data);
   }
 
-  // Global API for detail.js
-  window.EuroWeatherPrediction = {
-    fetchPrediction,
-  };
+  window.EuroWeatherPrediction = { fetchPrediction };
 })();

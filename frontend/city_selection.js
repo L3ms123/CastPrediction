@@ -1,4 +1,4 @@
-const API_BASE = "https://5l3e4zv2p1.execute-api.us-east-1.amazonaws.com";
+const API_BASE = "https://w0zpkv3mui.execute-api.us-east-1.amazonaws.com";
 
 window.searchMode = "city"; // global simple
 let citiesData = [];
@@ -44,7 +44,7 @@ async function loadPopularCity(card, cityName) {
   tempEl.textContent = "--°"; // estado inicial
 
   try {
-    const url = `${API_BASE}/current-weather?city=${encodeURIComponent(
+    const url = `${API_BASE}/weatherPrediction?city=${encodeURIComponent(
       cityName
     )}`;
     const res = await fetch(url);
